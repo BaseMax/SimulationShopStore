@@ -34,6 +34,9 @@ const elm_min_time_to_enter_queue = document.querySelector("#min_time_to_enter_q
 const elm_max_time_to_enter_queue = document.querySelector("#max_time_to_enter_queue");
 const elm_start_simulation = document.querySelector("#start_simulation");
 
+const elm_stage_count = document.querySelector("#stage-count");
+const elm_queue_count = document.querySelector("#queue-count");
+
 const elm_queue = document.querySelector(".queue");
 const elm_stage = document.querySelector(".stage");
 
@@ -48,6 +51,7 @@ function re_render() {
         <img src="desk.png">
     </div>`;
     const queue_clients = clients.filter(client => (client.status === "in_queue" || client.status === "in_service"));
+    elm_queue_count.innerHTML = "(" + queue_clients.length + ")";
     for (let i = 0; i < queue_clients.length; i++) {
         const client = queue_clients[i];
         if (client.status === "in_service") {
@@ -64,6 +68,7 @@ function re_render() {
     // Render queue
     elm_stage.innerHTML = "";
     const stage_clients = clients.filter(client => client.status == "in_stage");
+    elm_stage_count.innerHTML = "(" + stage_clients.length ")";
     for (let i = 0; i < stage_clients.length; i++) {
         const client = stage_clients[i];
         elm_stage.innerHTML += `<div class="queue-item" data-id="${client.id}">
