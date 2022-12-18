@@ -1,6 +1,7 @@
 * {
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 li {
     list-style: none;
@@ -11,7 +12,10 @@ img {
 body {
     background-color: white;
 }
-/* introduction */
+body, input, button, textarea {
+    font-family: Tahoma;
+    font-size: 13px;
+}
 .introduction {
     display: flex;
     flex-direction: column;
@@ -28,6 +32,30 @@ main {
 main h1 {
     margin-top: 25px;
 }
+section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+button {
+    text-align: center;
+    max-width: 100%;
+    min-width: 300px;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
 /* queue */
 .queue {
     margin-top: 20px;
@@ -38,5 +66,8 @@ main h1 {
 }
 .queue-item {
     width: 100px;
-    background-color: yellow;
+    /* background-color: yellow; */
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
