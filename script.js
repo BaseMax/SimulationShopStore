@@ -34,11 +34,11 @@ const elm_min_time_to_enter_queue = document.querySelector("#min_time_to_enter_q
 const elm_max_time_to_enter_queue = document.querySelector("#max_time_to_enter_queue");
 const elm_start_simulation = document.querySelector("#start_simulation");
 
-const elm_stage = document.querySelector(".stage");
 const elm_queue = document.querySelector(".queue");
+const elm_stage = document.querySelector(".stage");
 
 // Functions
-function random(min, max) {
+function random_range(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -47,7 +47,7 @@ function re_render() {
     elm_queue.innerHTML = `<div class="queue-item queue-item-lock">
         <img src="desk.png">
     </div>`;
-    const queue_clients = clients.filter(client => (client.status === "in_stage" || client.status === "in_service"));
+    const queue_clients = clients.filter(client => (client.status === "in_queue" || client.status === "in_service"));
     for (let i = 0; i < queue_clients.length; i++) {
         const client = queue_clients[i];
         if (client.status === "in_service") {
@@ -63,7 +63,7 @@ function re_render() {
 
     // Render queue
     elm_stage.innerHTML = "";
-    const stage_clients = clients.filter(client => client.status == "in_queue");
+    const stage_clients = clients.filter(client => client.status == "in_stage");
     for (let i = 0; i < stage_clients.length; i++) {
         const client = stage_clients[i];
         elm_stage.innerHTML += `<div class="queue-item" data-id="${client.id}">
@@ -73,9 +73,6 @@ function re_render() {
 }
 
 function run_iteration() {
-    re_render();
-    return;
-
     if (clients.length == 0) return;
 
     const ready_clients = clients.filter(client => client.status == "in_queue");
@@ -94,8 +91,8 @@ function run_iteration() {
         setTimeout(() => {
             client.status = "done";
             console.log("Client " + client.id + " is done!");
-            const client_index = clients.findIndex(c => c.id == client.id);
-            clients.splice(client_index, 1);
+            clients = clients.filter(item => item.id !== client.id);
+            re_render();
         }, client.time * 1000);
         // console.log(clients);
 
@@ -113,7 +110,7 @@ function run_iteration() {
             setTimeout(() => {
                 // console.log("Re-run iteration!");
                 run_iteration();
-            }, random(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
+            }, random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
         }
     }
 }
@@ -123,7 +120,7 @@ function simulation() {
     for (let i = 1; i <= params.max_simulation_clients; i++) {
         let client = {
             id: i,
-            time: random(params.min_client_response_time, params.max_client_response_time),
+            time: random_range(params.min_client_response_time, params.max_client_response_time),
             status: "in_stage",
         };
         clients.push(client);
@@ -135,20 +132,18 @@ function simulation() {
     }
 
     // Start animation
-    // run_iteration();
-    interval = setInterval(() => {
-        console.log("Interval iteration!");
+    let time = 0;
+    let time_random = random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue);
 
-        if (clients.length == 0) {
-            console.log("No clients!");
-            clearInterval(interval);
-            return;
+    const interval = setInterval(() => {
+        time += 1;
+        console.log("Time:", time, " | Time random:", time_random);
+        if (time === time_random) {
+            run_iteration();
+            time_random = random_range(params.min_client_response_time, params.max_client_response_time);
+            time = 0;
         }
-
-        // Check clients
-        run_iteration();
-    }, random(params.elm_min_client_response_time, params.elm_max_client_response_time) * 1000);
-    // clearInterval(interval);
+    }, 1000);
 }
 
 // Events
