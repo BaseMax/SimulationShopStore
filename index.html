@@ -18,37 +18,47 @@
         <h1>تنظیمات</h1>
         <section>
             <label>حداقل زمان پاسخگویی به یک متقاضی:</label>
-            <input id="" type="number" min="1" max="100">
+            <input id="min_client_response_time" type="number" min="1" max="100" value="6">
             
             <br>
 
             <label>حداکثر زمان پاسخگویی به یک متقاضی:</label>
-            <input id="" type="number" min="1" max="100">
+            <input id="max_client_response_time" type="number" min="1" max="100" value="12">
 
             <br>
 
             <label>تعداد متقاضیان آماده در صف در ابتدا:</label>
-            <input id="" type="number" min="0" max="100">
+            <input id="ready_to_service_clients_in_queue" type="number" min="0" max="100" value="2">
+
+            <br>
+
+            <label>ظرفیت صف:</label>
+            <input id="queue_size" type="number" min="0" max="100" value="10">
+
+            <br>
+
+            <label>نهایت تعداد مشتری برای آزمایش شبیه سازی:</label>
+            <input id="max_simulation_clients" type="number" min="0" max="500" value="100">
 
             <br>
 
             <label>زمان ورود اولین متقاضی به بخش پذیرش:</label>
-            <input id="" type="number" min="0" max="100">
+            <input id="time_to_enter_queue_first_client" type="number" min="0" max="100" value="5">
 
             <br>
 
             <label>حداقل زمان ورود متقاضی به بخش پذیرش:</label>
-            <input id="" type="number" min="1" max="100">
+            <input id="min_time_to_enter_queue" type="number" min="1" max="100" value="0.5">
 
             <br>
 
             <label>حداکثر زمان ورود متقاضی به بخش پذیرش:</label>
-            <input id="" type="number" min="1" max="100">
+            <input id="max_time_to_enter_queue" type="number" min="1" max="100" value="3">
 
             <br>
             
             <center>
-                <button>آغاز شبیه سازی</button>
+                <button id="start_simulation">آغاز شبیه سازی</button>
             </center>
 
         </section>
@@ -78,7 +88,7 @@
         <!-- back-stage -->
         <h1>خارج فروشگاه</h1>
         <section>
-            <div class="queue">
+            <div class="stage">
                 <div class="queue-item">
                     <img src="man.png">
                 </div>
@@ -94,6 +104,8 @@
             </div>
         </section>
     </main>
+
+    <script type="text/javascript" src="script.js"></script>
 
 </body>
 </html>
