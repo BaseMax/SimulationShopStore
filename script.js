@@ -86,14 +86,10 @@ function run_iteration() {
 
     // Check if we have more clients
     if (more_clients.length > 0) {
-        console.log("We have more clients!");
-        
-        // Re-run iteration
-        setTimeout(() => {
-            if (ready_clients.length < params.ready_to_service_clients_in_queue) {
-                more_clients[0].status = "in_queue";
-            }
-        }, random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
+        console.log("We have more clients!", ready_clients.length + service_clients.length, params.queue_size);
+        if ((ready_clients.length + service_clients.length) < params.queue_size) {
+            more_clients[0].status = "in_queue";
+        }
     }
 
     // Check clients
