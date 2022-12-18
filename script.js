@@ -81,13 +81,25 @@ function run_iteration() {
     if (clients.length == 0) return;
 
     const ready_clients = clients.filter(client => client.status == "in_queue");
-    console.log(ready_clients);
+    const more_clients = clients.filter(client => client.status == "in_stage");
+
+    // Check if we have more clients
+    if (more_clients.length > 0) {
+        console.log("We have more clients!");
+        
+        // Re-run iteration
+        setTimeout(() => {
+            more_clients[0].status = "in_queue";
+        }, random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
+    }
 
     // Check clients
     if (ready_clients.length > 0) {
+        if (ready_clients[0].status === "in_service") return;
+
         // Get first client
         const client = ready_clients[0];
-        console.log("Client: " + client.id);
+        console.log("Client " + client.id + " is ready to service!");
 
         // Remove client from queue
         client.status = "in_service";
@@ -102,21 +114,6 @@ function run_iteration() {
         // console.log(clients);
 
         re_render();
-    } else {
-        // Check if we have more clients
-        const more_clients = clients.filter(client => client.status == "in_stage");
-        if (more_clients.length > 0) {
-            console.log("We have more clients!");
-            more_clients[0].status = "in_queue";
-            
-            re_render();
-
-            // Re-run iteration
-            setTimeout(() => {
-                // console.log("Re-run iteration!");
-                run_iteration();
-            }, random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
-        }
     }
 }
 
@@ -141,6 +138,8 @@ function simulation() {
     let time_random = random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue);
 
     const interval = setInterval(() => {
+        re_render();
+
         if (clients.length == 0) {
             clearInterval(interval);
             state = "stop";
@@ -150,7 +149,7 @@ function simulation() {
         console.log("Time:", time, " | Time random:", time_random);
         if (time === time_random) {
             run_iteration();
-            time_random = random_range(params.min_client_response_time, params.max_client_response_time);
+            time_random = random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue);
             time = 0;
         }
     }, 1000);
