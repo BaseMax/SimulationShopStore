@@ -33,6 +33,7 @@ const elm_max_simulation_clients = document.querySelector("#max_simulation_clien
 const elm_min_time_to_enter_queue = document.querySelector("#min_time_to_enter_queue");
 const elm_max_time_to_enter_queue = document.querySelector("#max_time_to_enter_queue");
 const elm_start_simulation = document.querySelector("#start_simulation");
+const elm_stop_simulation = document.querySelector("#stop_simulation");
 
 const elm_stage_count = document.querySelector("#stage-count");
 const elm_queue_count = document.querySelector("#queue-count");
@@ -182,4 +183,16 @@ elm_start_simulation.addEventListener("click", () => {
     console.log(params);
 
     simulation();
+});
+
+elm_stop_simulation.addEventListener("click", () => {
+    state = "stop";
+    console.log("Stop simulation!");
+
+    elm_queue.innerHTML = `<div class="queue-item queue-item-lock">
+        <img src="desk.png">
+    </div>`;
+    elm_stage.innerHTML = ``;
+
+    clearInterval(interval);
 });
