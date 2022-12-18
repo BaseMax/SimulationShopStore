@@ -81,6 +81,7 @@ function run_iteration() {
     if (clients.length == 0) return;
 
     const ready_clients = clients.filter(client => client.status == "in_queue");
+    const service_clients = clients.filter(client => client.status == "in_service");
     const more_clients = clients.filter(client => client.status == "in_stage");
 
     // Check if we have more clients
@@ -89,14 +90,14 @@ function run_iteration() {
         
         // Re-run iteration
         setTimeout(() => {
-            more_clients[0].status = "in_queue";
+            if (ready_clients.length < params.ready_to_service_clients_in_queue) {
+                more_clients[0].status = "in_queue";
+            }
         }, random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
     }
 
     // Check clients
-    if (ready_clients.length > 0) {
-        if (ready_clients[0].status === "in_service") return;
-
+    if (ready_clients.length > 0 && service_clients.length == 0) {
         // Get first client
         const client = ready_clients[0];
         console.log("Client " + client.id + " is ready to service!");
@@ -146,8 +147,9 @@ function simulation() {
         }
 
         time += 1;
-        console.log("Time:", time, " | Time random:", time_random);
+        // console.log("Time:", time, " | Time random:", time_random);
         if (time === time_random) {
+            console.log("Service clients in queue and move clients from stage to queue!");
             run_iteration();
             time_random = random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue);
             time = 0;
