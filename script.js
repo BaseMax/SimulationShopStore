@@ -44,28 +44,39 @@ function random(min, max) {
 
 function re_render() {
     // Render stage
-    elm_stage.innerHTML = "";
-    const stage_clients = clients.filter(client => client.status == "in_stage");
-    for (let i = 0; i < stage_clients.length; i++) {
-        const client = stage_clients[i];
-        elm_stage.innerHTML += `<div class="client client_stage" data-id="${client.id}">${client.id}</div>`;
+    elm_queue.innerHTML = `<div class="queue-item queue-item-lock">
+        <img src="desk.png">
+    </div>`;
+    const queue_clients = clients.filter(client => (client.status === "in_stage" || client.status === "in_service"));
+    for (let i = 0; i < queue_clients.length; i++) {
+        const client = queue_clients[i];
+        if (client.status === "in_service") {
+            elm_queue.innerHTML += `<div class="queue-item client_in_service" data-id="${client.id}">
+                <img src="man.png">
+            </div>`;
+        } else {
+            elm_queue.innerHTML += `<div class="queue-item" data-id="${client.id}">
+                <img src="man.png">
+            </div>`;
+        }
     }
 
     // Render queue
-    elm_queue.innerHTML = "";
-    const queue_clients = clients.filter(client => client.status == "in_queue");
-    for (let i = 0; i < queue_clients.length; i++) {
-        const client = queue_clients[i];
-        elm_queue.innerHTML += `<div class="client client_queue" data-id="${client.id}">${client.id}</div>`;
+    elm_stage.innerHTML = "";
+    const stage_clients = clients.filter(client => client.status == "in_queue");
+    for (let i = 0; i < stage_clients.length; i++) {
+        const client = stage_clients[i];
+        elm_stage.innerHTML += `<div class="queue-item" data-id="${client.id}">
+            <img src="man.png">
+        </div>`;
     }
 }
 
 function run_iteration() {
-    if (clients.length == 0) {
-        console.log("No clients!");
-        clearInterval(interval);
-        return;
-    }
+    re_render();
+    return;
+
+    if (clients.length == 0) return;
 
     const ready_clients = clients.filter(client => client.status == "in_queue");
     console.log(ready_clients);
@@ -78,6 +89,8 @@ function run_iteration() {
 
         // Remove client from queue
         client.status = "in_service";
+        re_render();
+
         setTimeout(() => {
             client.status = "done";
             console.log("Client " + client.id + " is done!");
@@ -88,15 +101,11 @@ function run_iteration() {
 
         re_render();
     } else {
-        console.log("No clients in queue!");
-
         // Check if we have more clients
         const more_clients = clients.filter(client => client.status == "in_stage");
         if (more_clients.length > 0) {
             console.log("We have more clients!");
-            // Add client to queue
             more_clients[0].status = "in_queue";
-            console.log(clients);
             
             re_render();
 
@@ -129,6 +138,12 @@ function simulation() {
     // run_iteration();
     interval = setInterval(() => {
         console.log("Interval iteration!");
+
+        if (clients.length == 0) {
+            console.log("No clients!");
+            clearInterval(interval);
+            return;
+        }
 
         // Check clients
         run_iteration();

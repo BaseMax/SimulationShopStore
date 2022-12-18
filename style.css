@@ -71,3 +71,6 @@ button {
     align-items: center;
     display: flex;
 }
+.stage-item.client_in_service, .queue-item.client_in_service {
+    background-color: yellow;
+}
