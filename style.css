@@ -57,14 +57,14 @@ button {
     cursor: pointer;
 }
 /* queue */
-.queue {
+.stage, .queue {
     margin-top: 20px;
     display: flex;
     flex-direction: row;
     width: 100%;
     gap: 20px;
 }
-.queue-item {
+.stage-item, .queue-item {
     width: 100px;
     /* background-color: yellow; */
     justify-content: center;
