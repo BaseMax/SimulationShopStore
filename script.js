@@ -68,7 +68,7 @@ function re_render() {
     // Render queue
     elm_stage.innerHTML = "";
     const stage_clients = clients.filter(client => client.status == "in_stage");
-    elm_stage_count.innerHTML = "(" + stage_clients.length ")";
+    elm_stage_count.innerHTML = "(" + stage_clients.length + ")";
     for (let i = 0; i < stage_clients.length; i++) {
         const client = stage_clients[i];
         elm_stage.innerHTML += `<div class="queue-item" data-id="${client.id}">
@@ -141,6 +141,11 @@ function simulation() {
     let time_random = random_range(params.min_time_to_enter_queue, params.max_time_to_enter_queue);
 
     const interval = setInterval(() => {
+        if (clients.length == 0) {
+            clearInterval(interval);
+            state = "stop";
+        }
+
         time += 1;
         console.log("Time:", time, " | Time random:", time_random);
         if (time === time_random) {
