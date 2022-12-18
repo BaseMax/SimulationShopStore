@@ -11,6 +11,7 @@
  */
 
 // Variables
+let interval = null;
 let state = "stop";
 let params = {
     min_client_response_time: 0,
@@ -33,9 +34,79 @@ const elm_min_time_to_enter_queue = document.querySelector("#min_time_to_enter_q
 const elm_max_time_to_enter_queue = document.querySelector("#max_time_to_enter_queue");
 const elm_start_simulation = document.querySelector("#start_simulation");
 
+const elm_stage = document.querySelector(".stage");
+const elm_queue = document.querySelector(".queue");
+
 // Functions
 function random(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function re_render() {
+    // Render stage
+    elm_stage.innerHTML = "";
+    const stage_clients = clients.filter(client => client.status == "in_stage");
+    for (let i = 0; i < stage_clients.length; i++) {
+        const client = stage_clients[i];
+        elm_stage.innerHTML += `<div class="client client_stage" data-id="${client.id}">${client.id}</div>`;
+    }
+
+    // Render queue
+    elm_queue.innerHTML = "";
+    const queue_clients = clients.filter(client => client.status == "in_queue");
+    for (let i = 0; i < queue_clients.length; i++) {
+        const client = queue_clients[i];
+        elm_queue.innerHTML += `<div class="client client_queue" data-id="${client.id}">${client.id}</div>`;
+    }
+}
+
+function run_iteration() {
+    if (clients.length == 0) {
+        console.log("No clients!");
+        clearInterval(interval);
+        return;
+    }
+
+    const ready_clients = clients.filter(client => client.status == "in_queue");
+    console.log(ready_clients);
+
+    // Check clients
+    if (ready_clients.length > 0) {
+        // Get first client
+        const client = ready_clients[0];
+        console.log("Client: " + client.id);
+
+        // Remove client from queue
+        client.status = "in_service";
+        setTimeout(() => {
+            client.status = "done";
+            console.log("Client " + client.id + " is done!");
+            const client_index = clients.findIndex(c => c.id == client.id);
+            clients.splice(client_index, 1);
+        }, client.time * 1000);
+        // console.log(clients);
+
+        re_render();
+    } else {
+        console.log("No clients in queue!");
+
+        // Check if we have more clients
+        const more_clients = clients.filter(client => client.status == "in_stage");
+        if (more_clients.length > 0) {
+            console.log("We have more clients!");
+            // Add client to queue
+            more_clients[0].status = "in_queue";
+            console.log(clients);
+            
+            re_render();
+
+            // Re-run iteration
+            setTimeout(() => {
+                // console.log("Re-run iteration!");
+                run_iteration();
+            }, random(params.min_time_to_enter_queue, params.max_time_to_enter_queue) * 1000);
+        }
+    }
 }
 
 function simulation() {
@@ -55,16 +126,14 @@ function simulation() {
     }
 
     // Start animation
-    let time = 0;
-    let interval = setInterval(() => {
-        time++;
-        console.log("Time: " + time);
+    // run_iteration();
+    interval = setInterval(() => {
+        console.log("Interval iteration!");
 
         // Check clients
-        for (let i = 0; i < clients.length; i++) {
-            
-        }
-    }, 1 * 1000);
+        run_iteration();
+    }, random(params.elm_min_client_response_time, params.elm_max_client_response_time) * 1000);
+    // clearInterval(interval);
 }
 
 // Events
@@ -83,7 +152,11 @@ elm_start_simulation.addEventListener("click", () => {
         max_time_to_enter_queue: parseInt(elm_max_time_to_enter_queue.value),
     };
 
-    if (params.ready_to_service_clients_in_queue > params.elm_queue_size) {
+    if (params.ready_to_service_clients_in_queue > params.max_simulation_clients) {
+        alert("تعداد افراد آماده برای خدمت بیشتر از تعداد کل افراد است!");
+        return;
+    }
+    else if (params.ready_to_service_clients_in_queue > params.elm_queue_size) {
         alert("تعداد افراد آماده برای خدمت در صف بیشتر از اندازه صف است!");
         return;
     }
