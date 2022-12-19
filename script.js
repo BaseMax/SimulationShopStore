@@ -97,7 +97,7 @@ function run_iteration() {
 
     // Check clients
     if (ready_clients.length > 0 && service_clients.length < params.serving_how_many_clients_real_time) {
-        const imax = params.serving_how_many_clients_real_time - ready_clients.length;
+        const imax = params.serving_how_many_clients_real_time - service_clients.length;
         for (let i = 0; i < imax; i++) {
             const client = ready_clients[i];
             console.log("Client " + client.id + " is ready to service!");
