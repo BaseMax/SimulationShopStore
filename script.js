@@ -14,6 +14,7 @@
 let interval = null;
 let state = "stop";
 let params = {
+    serving_how_many_clients_real_time: 0,
     min_client_response_time: 0,
     max_client_response_time: 0,
     ready_to_service_clients_in_queue: 0,
@@ -25,6 +26,7 @@ let params = {
 let clients = [];
 
 // Elements
+const elm_serving_how_many_clients_real_time = document.querySelector("#serving_how_many_clients_real_time");
 const elm_min_client_response_time = document.querySelector("#min_client_response_time");
 const elm_max_client_response_time = document.querySelector("#max_client_response_time");
 const elm_ready_to_service_clients_in_queue = document.querySelector("#ready_to_service_clients_in_queue");
@@ -94,22 +96,20 @@ function run_iteration() {
     }
 
     // Check clients
-    if (ready_clients.length > 0 && service_clients.length == 0) {
-        // Get first client
-        const client = ready_clients[0];
-        console.log("Client " + client.id + " is ready to service!");
+    if (ready_clients.length > 0 && service_clients.length < params.serving_how_many_clients_real_time) {
+        const imax = params.serving_how_many_clients_real_time - ready_clients.length;
+        for (let i = 0; i < imax; i++) {
+            const client = ready_clients[i];
+            console.log("Client " + client.id + " is ready to service!");
+            client.status = "in_service";
 
-        // Remove client from queue
-        client.status = "in_service";
-        re_render();
-
-        setTimeout(() => {
-            client.status = "done";
-            console.log("Client " + client.id + " is done!");
-            clients = clients.filter(item => item.id !== client.id);
-            re_render();
-        }, client.time * 1000);
-        // console.log(clients);
+            setTimeout(() => {
+                client.status = "done";
+                console.log("Client " + client.id + " is done!");
+                clients = clients.filter(item => item.id !== client.id);
+                re_render();
+            }, client.time * 1000);
+        }
 
         re_render();
     }
@@ -161,6 +161,7 @@ elm_start_simulation.addEventListener("click", () => {
         return;
     }
     params = {
+        serving_how_many_clients_real_time: parseInt(elm_serving_how_many_clients_real_time.value),
         min_client_response_time: parseInt(elm_min_client_response_time.value),
         max_client_response_time: parseInt(elm_max_client_response_time.value),
         ready_to_service_clients_in_queue: parseInt(elm_ready_to_service_clients_in_queue.value),
@@ -170,7 +171,51 @@ elm_start_simulation.addEventListener("click", () => {
         max_time_to_enter_queue: parseInt(elm_max_time_to_enter_queue.value),
     };
 
-    if (params.ready_to_service_clients_in_queue > params.max_simulation_clients) {
+    if (params.serving_how_many_clients_real_time < 0) {
+        alert("تعداد افرادی که در هر لحظه می توانند خدمت شوند نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.ready_to_service_clients_in_queue < 0) {
+        alert("تعداد افراد آماده برای خدمت نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.max_simulation_clients < 0) {
+        alert("تعداد کل افراد نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.queue_size < 0) {
+        alert("اندازه صف نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.min_client_response_time < 0) {
+        alert("حداقل زمان پاسخگویی نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.max_client_response_time < 0) {
+        alert("حداکثر زمان پاسخگویی نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.min_time_to_enter_queue < 0) {
+        alert("حداقل زمان ورود به صف نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.max_time_to_enter_queue < 0) {
+        alert("حداکثر زمان ورود به صف نمی تواند منفی باشد!");
+        return;
+    }
+    else if (params.min_client_response_time > params.max_client_response_time) {
+        alert("حداقل زمان پاسخگویی بیشتر از حداکثر زمان پاسخگویی است!");
+        return;
+    }
+    else if (params.min_time_to_enter_queue > params.max_time_to_enter_queue) {
+        alert("حداقل زمان ورود به صف بیشتر از حداکثر زمان ورود به صف است!");
+        return;
+    }
+    else if (params.serving_how_many_clients_real_time > params.queue_size) {
+        alert("تعداد افرادی که در هر لحظه می توانند خدمت شوند بیشتر از اندازه صف است!");
+        return;
+    }
+    else if (params.ready_to_service_clients_in_queue > params.max_simulation_clients) {
         alert("تعداد افراد آماده برای خدمت بیشتر از تعداد کل افراد است!");
         return;
     }
