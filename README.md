@@ -2,6 +2,8 @@
 
 This is a web-based simulation of a shop-store. It is a simulation of a shop-store with a queue of clients. This simulation designed in a way that we can change the parameters of the simulation and see the results. Project is written in JavaScript withouth any third-party library.
 
+**Demo:** https://basemax.github.io/SimulationShopStore
+
 ## Parameters
 
 In this simulation, we can change the parameters of the simulation.
