@@ -17,6 +17,6 @@ There are a lot of parameters that we can change. Here is a list of parameters:
 - Minimum time to enter the queue
 - Maximum time to enter the queue
 
-![Simulation Shop-Store](https://user-images.githubusercontent.com/2658040/209415611-ca62128b-e209-4eb2-b4ae-b10997c819e0.png)
+[![Simulation Shop-Store](https://user-images.githubusercontent.com/2658040/209415611-ca62128b-e209-4eb2-b4ae-b10997c819e0.png)](https://basemax.github.io/SimulationShopStore/)
 
 [![Simulation Shop-Store](https://user-images.githubusercontent.com/2658040/208326078-02d85dcb-260a-44fb-8dc8-251a2298bda7.png)](https://basemax.github.io/SimulationShopStore/)
